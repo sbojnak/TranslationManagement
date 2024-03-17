@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using External.ThirdParty.Services;
@@ -9,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TranslationManagement.Api.Controlers;
+using TranslationManagement.Application.Contracts;
+using TranslationManagement.Domain.Entities;
+using TranslationManagement.Domain.Enums;
 
 namespace TranslationManagement.Api.Controllers
 {
@@ -16,118 +21,39 @@ namespace TranslationManagement.Api.Controllers
     [Route("api/jobs/[action]")]
     public class TranslationJobController : ControllerBase
     {
-        public class TranslationJob
-        {
-            public int Id { get; set; }
-            public string CustomerName { get; set; }
-            public string Status { get; set; }
-            public string OriginalContent { get; set; }
-            public string TranslatedContent { get; set; }
-            public double Price { get; set; }
-        }
-
-        static class JobStatuses
-        {
-            internal static readonly string New = "New";
-            internal static readonly string Inprogress = "InProgress";
-            internal static readonly string Completed = "Completed";
-        }
-
-        private AppDbContext _context;
         private readonly ILogger<TranslatorManagementController> _logger;
+        private readonly ITranslationJobService _translationJobService;
 
-        public TranslationJobController(IServiceScopeFactory scopeFactory, ILogger<TranslatorManagementController> logger)
+        public TranslationJobController(ILogger<TranslatorManagementController> logger,
+            ITranslationJobService translationJobService)
         {
-            _context = scopeFactory.CreateScope().ServiceProvider.GetService<AppDbContext>();
             _logger = logger;
+            _translationJobService = translationJobService;
         }
 
         [HttpGet]
-        public TranslationJob[] GetJobs()
+        public Task<BaseResponse<TranslationJob[]>> GetJobsAsync(CancellationToken cancellationToken)
         {
-            return _context.TranslationJobs.ToArray();
-        }
-
-        const double PricePerCharacter = 0.01;
-        private void SetPrice(TranslationJob job)
-        {
-            job.Price = job.OriginalContent.Length * PricePerCharacter;
+            return _translationJobService.GetJobsAsync(cancellationToken);
         }
 
         [HttpPost]
-        public bool CreateJob(TranslationJob job)
+        public Task<BaseResponse<bool>> CreateJobAsync(TranslationJob job, CancellationToken cancellationToken)
         {
-            job.Status = "New";
-            SetPrice(job);
-            _context.TranslationJobs.Add(job);
-            bool success = _context.SaveChanges() > 0;
-            if (success)
-            {
-                var notificationSvc = new UnreliableNotificationService();
-                while (!notificationSvc.SendNotification("Job created: " + job.Id).Result)
-                {
-                }
-
-                _logger.LogInformation("New job notification sent");
-            }
-
-            return success;
+            return _translationJobService.CreateJobAsync(job, cancellationToken);
         }
 
         [HttpPost]
-        public bool CreateJobWithFile(IFormFile file, string customer)
+        public Task<BaseResponse<bool>> CreateJobWithFileAsync(IFormFile file, string customer, CancellationToken cancellationToken)
         {
-            var reader = new StreamReader(file.OpenReadStream());
-            string content;
-
-            if (file.FileName.EndsWith(".txt"))
-            {
-                content = reader.ReadToEnd();
-            }
-            else if (file.FileName.EndsWith(".xml"))
-            {
-                var xdoc = XDocument.Parse(reader.ReadToEnd());
-                content = xdoc.Root.Element("Content").Value;
-                customer = xdoc.Root.Element("Customer").Value.Trim();
-            }
-            else
-            {
-                throw new NotSupportedException("unsupported file");
-            }
-
-            var newJob = new TranslationJob()
-            {
-                OriginalContent = content,
-                TranslatedContent = "",
-                CustomerName = customer,
-            };
-
-            SetPrice(newJob);
-
-            return CreateJob(newJob);
+            using var stream = file.OpenReadStream();
+            return _translationJobService.CreateJobWithFileAsync(stream, file.Name, customer, cancellationToken);
         }
 
         [HttpPost]
-        public string UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
+        public Task<BaseResponse<JobStatus>> UpdateJobStatusAsync(int jobId, int translatorId, JobStatus newStatus, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() + " by translator " + translatorId);
-            if (typeof(JobStatuses).GetProperties().Count(prop => prop.Name == newStatus) == 0)
-            {
-                return "invalid status";
-            }
-
-            var job = _context.TranslationJobs.Single(j => j.Id == jobId);
-
-            bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
-                                         job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
-            if (isInvalidStatusChange)
-            {
-                return "invalid status change";
-            }
-
-            job.Status = newStatus;
-            _context.SaveChanges();
-            return "updated";
+            return _translationJobService.UpdateJobStatusAsync(jobId, translatorId, newStatus, cancellationToken);
         }
     }
 }
