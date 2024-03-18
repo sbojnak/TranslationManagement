@@ -14,17 +14,19 @@ const TranslatorsList = () => {
   const [translators, setTranslators] = useState<Translator[] | null>();
   const [isAddTranslateDialogOpen, setIsAddTranslateDialogOpen] = useState(false);
 
+  async function getAllTranslators(){
+    const translatorsFromApi = await getTranslators();
+    setTranslators(translatorsFromApi);
+  }
+
   useEffect(() => {
-    async function getAllTranslators(){
-      const translatorsFromApi = await getTranslators();
-      setTranslators(translatorsFromApi);
-    }
     getAllTranslators();
-  });
+  }, [translators]);
 
   const addNewTranslator = (translator: Translator) => {
     addTranslator(translator);
     setIsAddTranslateDialogOpen(false);
+    getAllTranslators();
   }
 
   const formSchema = z.object({
@@ -133,7 +135,7 @@ const TranslatorsList = () => {
         </thead>
         <tbody>
           {translators?.map(translator => (
-            <tr className="py-1">
+            <tr className="py-1" key={translator.id}>
               <td className="px-2">{translator.name}</td>
               <td className="px-2">{translator.hourlyRate}</td>
               <td className="px-2">{translator.status}</td>

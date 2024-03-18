@@ -8,6 +8,7 @@ using TranslationManagement.Infrastructure;
 using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using TranslationManagement.Api.Filters;
+using System.Text.Json.Serialization;
 
 namespace TranslationManagement.Api
 {
@@ -25,7 +26,14 @@ namespace TranslationManagement.Api
             services.AddControllers(options =>
             {
                 options.Filters.Add<HttpResponseExceptionFilter>();
+            }).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+                options.JsonSerializerOptions.DefaultIgnoreCondition =
+                    JsonIgnoreCondition.WhenWritingNull;
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TranslationManagement.Api", Version = "v1" });

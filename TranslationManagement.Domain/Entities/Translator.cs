@@ -1,4 +1,5 @@
 ﻿
+using System.Text.Json.Serialization;
 using TranslationManagement.Domain.Enums;
 
 namespace TranslationManagement.Domain.Entities;

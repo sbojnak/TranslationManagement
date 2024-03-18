@@ -28,6 +28,7 @@ public class TranslatorManagementController : ControllerBase
     }
 
     [HttpGet]
+    [Route("GetTranslators")]
     public Task<Translator[]> GetTranslatorsAsync(CancellationToken cancellationToken)
     {
         return _translatorManagementService.GetTranslatorsAsync(cancellationToken);
