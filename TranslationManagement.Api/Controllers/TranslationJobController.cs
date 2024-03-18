@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using TranslationManagement.Api.Controlers;
 using TranslationManagement.Application.Contracts;
 using TranslationManagement.Application.Exceptions;
+using TranslationManagement.Domain.DataTransferObjects;
 using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
@@ -43,13 +44,13 @@ public class TranslationJobController : ControllerBase
 
     [HttpPost]
     [Route("Create")]
-    public async Task<IActionResult> CreateJobAsync([FromBody] TranslationJob job, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJobAsync([FromBody] TranslationJobDto job, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Going to create job with Id {JobId}", job.Id);
+        _logger.LogInformation("Going to create a new job {Job}", job);
         
         var success = await _translationJobService.CreateJobAsync(job, cancellationToken);
 
-        _logger.LogInformation("Job with id {JobId} successfully created", job.Id);
+        _logger.LogInformation("Job with id {Job} successfully created", job);
 
         if (success)
         {
@@ -63,7 +64,7 @@ public class TranslationJobController : ControllerBase
     public async Task<IActionResult> CreateJobWithFileAsync(IFormFile file, [FromRoute] string customerName, CancellationToken cancellationToken)
     {
         using var stream = file.OpenReadStream();
-        var success = await _translationJobService.CreateJobWithFileAsync(stream, file.Name, customerName, cancellationToken);
+        var success = await _translationJobService.CreateJobWithFileAsync(stream, file.FileName, customerName, cancellationToken);
         if (success)
         {
             return Ok();
@@ -73,13 +74,13 @@ public class TranslationJobController : ControllerBase
 
     [HttpPut]
     [Route("{jobId}/UpdateStatus")]
-    public Task<JobStatus> UpdateJobStatusAsync([FromRoute] int jobId, [FromQuery] int newTranslatorId, [FromQuery] JobStatus newStatus, CancellationToken cancellationToken)
+    public Task<JobStatus> UpdateJobStatusAsync([FromRoute] int jobId, [FromQuery] int translatorId, [FromQuery] JobStatus newStatus, CancellationToken cancellationToken)
     {
         if(jobId <= 0)
         {
             throw new InvalidJobIdException($"Job id value is {jobId}. It has to be more than zero.");
         }
 
-        return _translationJobService.UpdateJobStatusAsync(jobId, newTranslatorId, newStatus, cancellationToken);
+        return _translationJobService.UpdateJobStatusAsync(jobId, translatorId, newStatus, cancellationToken);
     }
 }

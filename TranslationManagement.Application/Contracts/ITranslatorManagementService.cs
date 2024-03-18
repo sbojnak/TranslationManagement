@@ -1,4 +1,5 @@
-﻿using TranslationManagement.Domain.Entities;
+﻿using TranslationManagement.Domain.DataTransferObjects;
+using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
 namespace TranslationManagement.Application.Contracts;
@@ -8,8 +9,8 @@ namespace TranslationManagement.Application.Contracts;
 /// </summary>
 public interface ITranslatorManagementService
 {
-    Task<bool> AddTranslatorAsync(Translator translator, CancellationToken cancellationToken);
-    Task<Translator[]> GetTranslatorsAsync(CancellationToken cancellationToken);
-    Task<Translator[]> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken);
+    Task<bool> AddTranslatorAsync(TranslatorDto translator, CancellationToken cancellationToken);
+    Task<TranslatorDto[]> GetTranslatorsAsync(CancellationToken cancellationToken);
+    Task<TranslatorDto[]> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken);
     Task<TranslatorStatus> UpdateTranslatorStatusAsync(int translatorId, TranslatorStatus newStatus, CancellationToken cancellationToken);
 }

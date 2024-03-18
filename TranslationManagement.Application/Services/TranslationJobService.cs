@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using TranslationManagement.Application.Abstractions;
 using TranslationManagement.Application.Contracts;
 using TranslationManagement.Application.Exceptions;
+using TranslationManagement.Domain.DataTransferObjects;
 using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
@@ -35,18 +37,24 @@ internal class TranslationJobService : ITranslationJobService
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task<bool> CreateJobAsync(TranslationJob job, CancellationToken cancellationToken)
+    public async Task<bool> CreateJobAsync(TranslationJobDto job, CancellationToken cancellationToken)
     {
-        job.Status = JobStatus.New;
-        SetPrice(job);
-        _context.TranslationJobs.Add(job);
+        var jobEntity = new TranslationJob
+        {
+            CustomerName = job.CustomerName,
+            Status = JobStatus.New,
+            OriginalContent = job.OriginalContent,
+            Price = SetPrice(job.OriginalContent.Length),
+            TranslatedContent = job.TranslatedContent,
+        };
+        _context.TranslationJobs.Add(jobEntity);
 
         bool success = await _context.SaveChangesAsync(cancellationToken) > 0;
 
         if (success)
         {
-            await _messagingService.SendNotificationAsync("Job created: " + job.Id, cancellationToken);
-            _logger.LogInformation("New job with ID {JobID} notification sent", job.Id);
+            var _ = Task.Run(() => _messagingService.SendNotificationAsync("Job created: " + jobEntity.Id, cancellationToken), cancellationToken);
+            _logger.LogInformation("New job with ID {JobID} notification sent", jobEntity.Id);
         }
 
         return success;
@@ -65,14 +73,13 @@ internal class TranslationJobService : ITranslationJobService
             throw new ArgumentNullException("Content of file {Filename} is null", filename);
         }
 
-        var newJob = new TranslationJob()
-        {
-            OriginalContent = content,
-            TranslatedContent = "",
-            CustomerName = customer,
-        };
-
-        SetPrice(newJob);
+        var newJob = new TranslationJobDto(
+            Id: default,
+            CustomerName: customer,
+            OriginalContent: content,
+            TranslatedContent: "",
+            Price: SetPrice(content.Length)
+        );
 
         return await CreateJobAsync(newJob, cancellationToken);
     }
@@ -96,10 +103,14 @@ internal class TranslationJobService : ITranslationJobService
         }
 
         bool isInvalidStatusChange = (job.Status == JobStatus.New && newStatus == JobStatus.Completed) ||
-                                     job.Status == JobStatus.Completed || newStatus == JobStatus.New;
+                                     job.Status == JobStatus.Completed || 
+                                     newStatus == JobStatus.New ||
+                                     translator.Status != TranslatorStatus.Certified;
+                                     
         if (isInvalidStatusChange)
         {
-            throw new InvalidJobStatusChangeException($"Status change from {job.Status} to {newStatus} is invalid");
+            throw new InvalidJobStatusChangeException($"Status change from {job.Status} to {newStatus} is invalid for translator with id {translator.Id}. " +
+                                                      $"Transition is incorrect or translator is not certified.");
         }
 
         job.Status = newStatus;
@@ -108,8 +119,8 @@ internal class TranslationJobService : ITranslationJobService
         return job.Status;
     }
 
-    private void SetPrice(TranslationJob job)
+    private double SetPrice(int jobOriginalContentLength)
     {
-        job.Price = job.OriginalContent.Length * PricePerCharacter;
+        return jobOriginalContentLength * PricePerCharacter;
     }
 }

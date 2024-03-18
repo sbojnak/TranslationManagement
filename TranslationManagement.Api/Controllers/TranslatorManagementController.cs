@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TranslationManagement.Application.Contracts;
 using TranslationManagement.Application.Exceptions;
+using TranslationManagement.Domain.DataTransferObjects;
 using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
@@ -29,20 +30,20 @@ public class TranslatorManagementController : ControllerBase
 
     [HttpGet]
     [Route("GetTranslators")]
-    public Task<Translator[]> GetTranslatorsAsync(CancellationToken cancellationToken)
+    public Task<TranslatorDto[]> GetTranslatorsAsync(CancellationToken cancellationToken)
     {
         return _translatorManagementService.GetTranslatorsAsync(cancellationToken);
     }
 
     [HttpGet]
     [Route("GetTranslators/{name}")]
-    public Task<Translator[]> GetTranslatorsByNameAsync([FromRoute] string name, CancellationToken cancellationToken)
+    public Task<TranslatorDto[]> GetTranslatorsByNameAsync([FromRoute] string name, CancellationToken cancellationToken)
     {
         return _translatorManagementService.GetTranslatorsByNameAsync(name, cancellationToken);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTranslatorAsync([FromBody] Translator translator, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddTranslatorAsync([FromBody] TranslatorDto translator, CancellationToken cancellationToken)
     {
         var success = await _translatorManagementService.AddTranslatorAsync(translator, cancellationToken);
         if (success)

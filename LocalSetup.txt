@@ -1,0 +1,10 @@
+Run following commands in the root directory of this repository (You will need ports 3000 and 5000 unoccupied):
+
+dotnet restore
+dotnet build
+dotnet run --urls=http://localhost:5000/ --project TranslationManagement.Api
+
+cd Frontend
+npm install
+npm run build
+npm run dev

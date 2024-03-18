@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TranslationManagement.Application.Abstractions;
 using TranslationManagement.Application.Contracts;
 using TranslationManagement.Application.Exceptions;
+using TranslationManagement.Domain.DataTransferObjects;
 using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
@@ -19,19 +20,41 @@ internal class TranslatorManagementService : ITranslatorManagementService
         _logger = logger;
     }
 
-    public Task<Translator[]> GetTranslatorsAsync(CancellationToken cancellationToken)
+    public async Task<TranslatorDto[]> GetTranslatorsAsync(CancellationToken cancellationToken)
     {
-        return _context.Translators.ToArrayAsync(cancellationToken);
+        var resultEntities = await _context.Translators.ToArrayAsync(cancellationToken);
+        
+        return resultEntities.Select(x => new TranslatorDto(
+            Id: x.Id,
+            Name: x.Name,
+            HourlyRate: x.HourlyRate,
+            Status: x.Status,
+            CreditCardNumber: x.CreditCardNumber))
+            .ToArray();
     }
 
-    public Task<Translator[]> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<TranslatorDto[]> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken)
     {
-        return _context.Translators.Where(t => t.Name == name).ToArrayAsync(cancellationToken);
+        var resultEntities = await _context.Translators.Where(t => t.Name == name).ToArrayAsync(cancellationToken);
+        return resultEntities.Select(x => new TranslatorDto(
+            Id: x.Id,
+            Name: x.Name,
+            HourlyRate: x.HourlyRate,
+            Status: x.Status,
+            CreditCardNumber: x.CreditCardNumber))
+            .ToArray();
+
     }
 
-    public async Task<bool> AddTranslatorAsync(Translator translator, CancellationToken cancellationToken)
+    public async Task<bool> AddTranslatorAsync(TranslatorDto translator, CancellationToken cancellationToken)
     {
-        _context.Translators.Add(translator);
+        _context.Translators.Add(new Translator 
+        {
+            Status = translator.Status,
+            CreditCardNumber = translator.CreditCardNumber,
+            HourlyRate = translator.HourlyRate,
+            Name = translator.Name
+        });
         return await _context.SaveChangesAsync(cancellationToken) > 0;
     }
 
