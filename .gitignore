@@ -16,9 +16,6 @@ wwwroot_node
 *.nupkg
 .DS_Store
 .idea
-.db
-.db-shm
-.db-wal
 *.db
 *.db-shm
 *.db-wal
