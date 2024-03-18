@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TranslationManagement.Application.Abstractions;
 using TranslationManagement.Application.Contracts;
+using TranslationManagement.Application.Exceptions;
 using TranslationManagement.Domain.Entities;
 using TranslationManagement.Domain.Enums;
 
@@ -38,7 +39,13 @@ internal class TranslatorManagementService : ITranslatorManagementService
     {
         _logger.LogInformation("User status update request: " + newStatus + " for user " + translatorId.ToString());
 
-        var translator = _context.Translators.Single(t => t.Id == translatorId);
+        var translator = await _context.Translators.FirstOrDefaultAsync(t => t.Id == translatorId);
+
+        if(translator == null)
+        {
+            throw new InvalidTranslatorIdException($"Cannot find translator ID {translatorId} in the database");
+        }
+
         translator.Status = newStatus;
         await _context.SaveChangesAsync(cancellationToken);
 

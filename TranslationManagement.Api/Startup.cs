@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using TranslationManagement.Infrastructure;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using TranslationManagement.Api.Filters;
 
 namespace TranslationManagement.Api
 {
@@ -19,7 +22,10 @@ namespace TranslationManagement.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<HttpResponseExceptionFilter>();
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TranslationManagement.Api", Version = "v1" });
@@ -27,6 +33,18 @@ namespace TranslationManagement.Api
 
             services.AddInfrastructure();
             services.AddApplication();
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1);
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            }).AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'V";
+                options.SubstituteApiVersionInUrl = true;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

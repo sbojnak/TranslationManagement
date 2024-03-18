@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TranslationManagement.Application.Exceptions;
 
-namespace TranslationManagement.Application.Exceptions;
-
+/// <summary>
+/// Exception to be raised when job transition from old status to new status is not valid.
+/// </summary>
 public class InvalidJobStatusChangeException : Exception
 {
     public InvalidJobStatusChangeException() : base() { }

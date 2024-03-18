@@ -16,4 +16,9 @@
     <ProjectReference Include="..\TranslationManagement.Domain\TranslationManagement.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="TranslationManagement.Application.Tests" />
+	<InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+  </ItemGroup>
+
 </Project>

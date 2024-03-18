@@ -14,7 +14,7 @@ namespace TranslationManagement.Api
 
             // automatic startup database migration
             var scope = host.Services.GetService<IServiceScopeFactory>()?.CreateScope();
-            scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+            scope?.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
 
             host.Run();
         }

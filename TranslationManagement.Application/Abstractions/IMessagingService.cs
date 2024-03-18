@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TranslationManagement.Application.Abstractions;
 
-namespace TranslationManagement.Application.Abstractions
+/// <summary>
+/// Abstraction interface for messaging functionality.
+/// </summary>
+public interface IMessagingService
 {
-    public interface IMessagingService
-    {
-        Task SendNotificationAsync(string message, CancellationToken cancellationToken);
-    }
+    Task SendNotificationAsync(string message, CancellationToken cancellationToken);
 }

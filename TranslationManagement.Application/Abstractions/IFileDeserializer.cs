@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TranslationManagement.Application.Abstractions;
 
-namespace TranslationManagement.Application.Abstractions
+/// <summary>
+/// Deserializes content of a file.
+/// Deserialization can depend on a different file type.
+/// </summary>
+public interface IFileDeserializer
 {
-    public interface IFileDeserializer
-    {
-        Task<string> GetFileContentAsync(Stream fileStream);
-    }
+    Task<string> GetFileContentAsync(Stream fileStream);
 }

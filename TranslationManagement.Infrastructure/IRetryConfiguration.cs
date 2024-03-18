@@ -1,14 +1,12 @@
 ﻿using Polly.Retry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TranslationManagement.Infrastructure
+namespace TranslationManagement.Infrastructure;
+
+/// <summary>
+/// Provides specific configuration of wait and retry for a polly pipeline.
+/// Any other configuration can be added here and used.
+/// </summary>
+public interface IRetryConfiguration
 {
-    public interface IRetryConfiguration
-    {
-        RetryStrategyOptions ConfigPollyWaitAndRetryPolicy();
-    }
+    RetryStrategyOptions ConfigPollyWaitAndRetryPolicy();
 }

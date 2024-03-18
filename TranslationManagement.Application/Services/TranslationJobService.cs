@@ -81,7 +81,19 @@ internal class TranslationJobService : ITranslationJobService
     {
         _logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() + " by translator " + translatorId);
 
-        var job = _context.TranslationJobs.Single(j => j.Id == jobId);
+        var job = await _context.TranslationJobs.FirstOrDefaultAsync(j => j.Id == jobId);
+
+        if(job == null)
+        {
+            throw new InvalidJobIdException($"Cannot find job ID {jobId} in the database");
+        }
+
+        var translator = _context.Translators.Single(t => t.Id == translatorId);
+
+        if(translator == null)
+        {
+            throw new InvalidTranslatorIdException($"Cannot find translator ID {translatorId} in the database");
+        }
 
         bool isInvalidStatusChange = (job.Status == JobStatus.New && newStatus == JobStatus.Completed) ||
                                      job.Status == JobStatus.Completed || newStatus == JobStatus.New;
@@ -91,6 +103,7 @@ internal class TranslationJobService : ITranslationJobService
         }
 
         job.Status = newStatus;
+        job.TranslatorId = translatorId;
         await _context.SaveChangesAsync(cancellationToken);
         return job.Status;
     }

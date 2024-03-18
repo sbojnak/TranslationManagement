@@ -40,6 +40,8 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
                 //client errors
                 InvalidJobFileException _ => 400,
                 InvalidJobStatusChangeException _ => 400,
+                InvalidJobIdException _ => 400,
+                InvalidTranslatorIdException _ => 400,
 
                 //General error
                 Exception _ => 500,

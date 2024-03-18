@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TranslationManagement.Application.Abstractions;
 
-namespace TranslationManagement.Application.Abstractions
+/// <summary>
+/// Decides about what deserializer will be used by file type. File type should contain also a '.' prefix.
+/// </summary>
+public interface IFileDeserializerTypeResolver
 {
-    public interface IFileDeserializerTypeResolver
-    {
-        IFileDeserializer GetFileDeserializerByType(string fileType);
-    }
+    IFileDeserializer GetFileDeserializerByType(string fileType);
 }
