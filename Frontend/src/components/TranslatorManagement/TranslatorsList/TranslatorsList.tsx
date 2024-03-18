@@ -11,24 +11,21 @@ const TranslatorsList = () => {
   const [isAddTranslateDialogOpen, setIsAddTranslateDialogOpen] = useState<boolean>(false);
 
   async function getAllTranslators(){
-    console.log("getAllTranslators");
     const translatorsFromApi = await getTranslators();
     setTranslators(translatorsFromApi);
   }
 
   const onNewTranslatorAdded = () => {
-    console.log("onNewTranslatorAdded");
     setIsAddTranslateDialogOpen(false);
     getAllTranslators();
   }
 
   const onOpenChange = (isOpen: boolean) => {
-    setIsAddTranslateDialogOpen(isOpen);
     getAllTranslators();
+    setIsAddTranslateDialogOpen(isOpen);
   }
 
   useEffect(() => {
-    console.log("useEffect");
     getAllTranslators();
   }, [isAddTranslateDialogOpen]);
 

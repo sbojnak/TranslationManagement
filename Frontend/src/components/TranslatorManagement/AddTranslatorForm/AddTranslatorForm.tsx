@@ -15,10 +15,8 @@ interface AddTranslatorFormProps {
 const AddTranslatorForm = ( { onNewTranslatorAdded }: AddTranslatorFormProps) => {
 
   const addNewTranslator = (translator: Translator) => {
-    addTranslator(translator);
-    onNewTranslatorAdded();
-    // setIsAddTranslateDialogOpen(false);
-    // getAllTranslators();
+    addTranslator(translator)
+      .then(() => onNewTranslatorAdded());
   }
   
   const formSchema = z.object({
