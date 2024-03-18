@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-import { addTranslator, getTranslators } from "../../../apiServices/translatorsService";
+import { getTranslators } from "../../../apiServices/translatorsService";
 import { Translator } from "../../../apiTypes/Translator";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from 'react-hook-form';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import AddTranslatorForm from "../AddTranslatorForm/AddTranslatorForm";
 
 
 const TranslatorsList = () => {
@@ -19,36 +15,14 @@ const TranslatorsList = () => {
     setTranslators(translatorsFromApi);
   }
 
-  useEffect(() => {
-    getAllTranslators();
-  }, [translators]);
-
-  const addNewTranslator = (translator: Translator) => {
-    addTranslator(translator);
+  const onNewTranslatorAdded = () => {
     setIsAddTranslateDialogOpen(false);
     getAllTranslators();
   }
 
-  const formSchema = z.object({
-    name: z.string().min(1, {
-      message: "Translator's name cannot be empty.",
-    }),
-    hourlyRate: z.string().min(1, {
-      message: "Hourly rate has to be at least 0.",
-    }),
-    status: z.string(),
-    creditCardNumber: z.string(),
-  })
-
-  const form = useForm<Translator>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      hourlyRate: "0",
-      status: "",
-      creditCardNumber: "",
-    },
-  })
+  useEffect(() => {
+    getAllTranslators();
+  }, [isAddTranslateDialogOpen]);
 
   return (
     <>
@@ -63,65 +37,8 @@ const TranslatorsList = () => {
               Make changes to your profile here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(addNewTranslator)} className="space-y-8">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="hourlyRate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hourly rate</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <FormControl>
-                        <Input placeholder="shadcn" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="creditCardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Credit card number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="shadcn" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit">Submit</Button>
-              </form>
-            </Form>
-          </div>
+
+          <AddTranslatorForm onNewTranslatorAdded={onNewTranslatorAdded} />
         </DialogContent>
       </Dialog>
 

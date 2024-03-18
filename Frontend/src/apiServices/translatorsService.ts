@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { handleError } from "../helperFunctions/errorHandlingFunctions";
 import { Translator } from '../apiTypes/Translator';
+import toast from 'react-hot-toast';
 
 export const getTranslators = async () : Promise<Translator[] | null> => {
   try {
@@ -15,7 +16,9 @@ export const getTranslators = async () : Promise<Translator[] | null> => {
 
 export const addTranslator = async (translator: Translator) : Promise<AxiosResponse | null> => {
   try {
+    console.log(translator);
     const response = await axios.post('/api/v1/TranslatorsManagement', translator)
+    toast.success("Translator successfully added.");
     return response.data;
   }
   catch(error) {

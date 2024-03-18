@@ -9,6 +9,7 @@ using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using TranslationManagement.Api.Filters;
 using System.Text.Json.Serialization;
+using Prometheus;
 
 namespace TranslationManagement.Api
 {
@@ -66,6 +67,8 @@ namespace TranslationManagement.Api
             {
                 endpoints.MapControllers();
             });
+
+            app.UseMetricServer();
         }
     }
 }

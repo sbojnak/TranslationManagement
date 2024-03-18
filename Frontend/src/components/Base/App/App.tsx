@@ -4,6 +4,7 @@ import Layout from '../Layout/Layout';
 import ErrorPage from '../ErrorPage/ErrorPage';
 import Home from '../Home/Home';
 import TranslatorsList from '../../TranslatorManagement/TranslatorsList/TranslatorsList';
+import { Toaster } from 'react-hot-toast';
 
 //Navigation table is rendered in Layout component
 const router = createBrowserRouter([
@@ -28,6 +29,7 @@ const App = () => {
   return (
     <div>
       <RouterProvider router={router} />
+      <Toaster />
     </div>
   )
 }
