@@ -32,26 +32,26 @@ namespace TranslationManagement.Api.Controllers
         }
 
         [HttpGet]
-        public Task<BaseResponse<TranslationJob[]>> GetJobsAsync(CancellationToken cancellationToken)
+        public Task<TranslationJob[]> GetJobsAsync(CancellationToken cancellationToken)
         {
             return _translationJobService.GetJobsAsync(cancellationToken);
         }
 
         [HttpPost]
-        public Task<BaseResponse<bool>> CreateJobAsync(TranslationJob job, CancellationToken cancellationToken)
+        public Task<bool> CreateJobAsync(TranslationJob job, CancellationToken cancellationToken)
         {
             return _translationJobService.CreateJobAsync(job, cancellationToken);
         }
 
         [HttpPost]
-        public Task<BaseResponse<bool>> CreateJobWithFileAsync(IFormFile file, string customer, CancellationToken cancellationToken)
+        public Task<bool> CreateJobWithFileAsync(IFormFile file, string customer, CancellationToken cancellationToken)
         {
             using var stream = file.OpenReadStream();
             return _translationJobService.CreateJobWithFileAsync(stream, file.Name, customer, cancellationToken);
         }
 
         [HttpPost]
-        public Task<BaseResponse<JobStatus>> UpdateJobStatusAsync(int jobId, int translatorId, JobStatus newStatus, CancellationToken cancellationToken)
+        public Task<JobStatus> UpdateJobStatusAsync(int jobId, int translatorId, JobStatus newStatus, CancellationToken cancellationToken)
         {
             return _translationJobService.UpdateJobStatusAsync(jobId, translatorId, newStatus, cancellationToken);
         }

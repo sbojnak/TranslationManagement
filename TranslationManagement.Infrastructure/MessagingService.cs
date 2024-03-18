@@ -16,11 +16,11 @@ namespace TranslationManagement.Infrastructure
     {
         private readonly ILogger<MessagingService> _logger;
         private readonly ResiliencePipeline _pipeline;
-        private readonly UnreliableNotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
         public MessagingService(ILogger<MessagingService> logger,
             IRetryConfiguration retryConfiguration,
-            UnreliableNotificationService notificationService)
+            INotificationService notificationService)
         {
             _logger = logger;
             _notificationService = notificationService;

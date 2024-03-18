@@ -27,25 +27,25 @@ namespace TranslationManagement.Api.Controlers
         }
 
         [HttpGet]
-        public Task<BaseResponse<Translator[]>> GetTranslatorsAsync(CancellationToken cancellationToken)
+        public Task<Translator[]> GetTranslatorsAsync(CancellationToken cancellationToken)
         {
             return _translatorManagementService.GetTranslatorsAsync(cancellationToken);
         }
 
         [HttpGet]
-        public Task<BaseResponse<Translator[]>> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken)
+        public Task<Translator[]> GetTranslatorsByNameAsync(string name, CancellationToken cancellationToken)
         {
             return _translatorManagementService.GetTranslatorsByNameAsync(name, cancellationToken);
         }
 
         [HttpPost]
-        public Task<BaseResponse<bool>> AddTranslatorAsync(Translator translator, CancellationToken cancellationToken)
+        public Task<bool> AddTranslatorAsync(Translator translator, CancellationToken cancellationToken)
         {
             return _translatorManagementService.AddTranslatorAsync(translator, cancellationToken);
         }
         
         [HttpPost]
-        public Task<BaseResponse<TranslatorStatus>> UpdateTranslatorStatusAsync(int translator, TranslatorStatus newStatus, CancellationToken cancellationToken)
+        public Task<TranslatorStatus> UpdateTranslatorStatusAsync(int translator, TranslatorStatus newStatus, CancellationToken cancellationToken)
         {
             return _translatorManagementService.UpdateTranslatorStatusAsync(translator, newStatus, cancellationToken);
         }

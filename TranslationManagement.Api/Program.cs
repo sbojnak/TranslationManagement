@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TranslationManagement.Infrastructure;
 
 namespace TranslationManagement.Api
 {
@@ -12,7 +13,7 @@ namespace TranslationManagement.Api
             var host = CreateHostBuilder(args).Build();
 
             // automatic startup database migration
-            var scope = host.Services.GetService<IServiceScopeFactory>().CreateScope();
+            var scope = host.Services.GetService<IServiceScopeFactory>()?.CreateScope();
             scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
 
             host.Run();
