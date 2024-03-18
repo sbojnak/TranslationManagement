@@ -8,25 +8,33 @@ import AddTranslatorForm from "../AddTranslatorForm/AddTranslatorForm";
 
 const TranslatorsList = () => {
   const [translators, setTranslators] = useState<Translator[] | null>();
-  const [isAddTranslateDialogOpen, setIsAddTranslateDialogOpen] = useState(false);
+  const [isAddTranslateDialogOpen, setIsAddTranslateDialogOpen] = useState<boolean>(false);
 
   async function getAllTranslators(){
+    console.log("getAllTranslators");
     const translatorsFromApi = await getTranslators();
     setTranslators(translatorsFromApi);
   }
 
   const onNewTranslatorAdded = () => {
+    console.log("onNewTranslatorAdded");
     setIsAddTranslateDialogOpen(false);
     getAllTranslators();
   }
 
+  const onOpenChange = (isOpen: boolean) => {
+    setIsAddTranslateDialogOpen(isOpen);
+    getAllTranslators();
+  }
+
   useEffect(() => {
+    console.log("useEffect");
     getAllTranslators();
   }, [isAddTranslateDialogOpen]);
 
   return (
     <>
-      <Dialog open={isAddTranslateDialogOpen} onOpenChange={setIsAddTranslateDialogOpen}>
+      <Dialog open={isAddTranslateDialogOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
           <Button>Add translator</Button>
         </DialogTrigger>
