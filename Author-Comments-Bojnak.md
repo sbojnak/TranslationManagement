@@ -41,4 +41,5 @@ npm run dev
 - Better telemetry and logging (dashboards etc.),
 - Static texts in frontend added to the localization resources (they are hard-coded now),
 - Added docker-compose for faster local run,
+- Update to .NET 8 (it is also LTS like .NET 6) so that all libraries and frameworks are up-to-date
 - Central state management on frontend if application would be more and more complex
